@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WELCOME!</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css"
+        integrity="sha384-dpuaG1suU0eT09tx5plTaGMLBsfDLzUCCUXOY2j/LSvXYuG6Bqs43ALlhIqAJVRb" crossorigin="anonymous">
+
+    <style>
+        body {
+            background-color: #e1dee4;
+        }
+
+        .jumbotron {
+            background-color: black;
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .clock {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .date {
+            font-size: 1.25rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    
+    <div class="clock">
+
+        <div class="clock-face">
+  
+          <div class="hand hour-hand"></div>
+  
+          <div class="hand minute-hand"></div>
+  
+          <div class="hand second-hand"></div>
+  
+        </div>
+  
+      </div>
+  
+      <script src="script.js"></script>
+  </body>
+  </html>
+
+  
+    <!-- Navbar Section -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <script type="text/javascript">
+        let myDate = new Date();
+        let myDay = myDate.getDay();
+
+        // Array of days. 
+        let weekday = ['Sunday', 'Monday', 'Tuesday',
+            'Wednesday', 'Thursday', 'Friday', 'Saturday'
+        ];
+        document.write("Today is : " + weekday[myDay]);
+        document.write("<br/>");
+
+        // get hour value. 
+        let hours = myDate.getHours();
+        let ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12;
+        let minutes = myDate.getMinutes();
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        let myTime = hours + " " + ampm + " : " + minutes +
+            " : " + myDate.getMilliseconds();
+        document.write("\tCurrent time is : " + myTime); 
+    </script>
+
+    <!-- Jumbotron Section -->
+    <div class="jumbotron">
+        <h1 class="display-4">CLOCK</h1>
+        <p class="lead">"The clock is ticking—what are you doing with your time?"</p>
+        <div id="clock" class="clock"></div> <!-- Time will be updated here -->
+        <div id="date" class="date"></div> <!-- Date will be updated here -->
+        <p class="mt-3">"Time, a Gift from Allah – Use It Wisely."</p>
+
+        <!-- Time Zone Selector -->
+        <select id="timezone-select" class="form-select mt-3">
+            <option value="UTC">UTC</option>
+            <option value="Asia/Kolkata">India Standard Time (IST)</option> <!-- India Time -->
+            <option value="Asia/Karachi">Karachi (PKT)</option>
+            <option value="Asia/Riyadh">Riyadh (AST)</option>
+            <option value="Europe/London">London (GMT)</option>
+        </select>
+    </div>
+
+    <!-- Optional JavaScript; choose one of the two! -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment-timezone@0.5.34/moment-timezone-with-data.js"></script>
+
+    <script>
+        // Function to update the clock and date
+        function updateClock() {
+            const timezone = document.getElementById('timezone-select').value; // Get selected timezone
+            const now = moment().tz(timezone); // Get current time in selected timezone
+            const timeString = now.format('HH:mm:ss'); // Get time in HH:mm:ss format
+            const dateString = now.format('dddd, MMMM Do YYYY'); // Get date in full format
+
+            // Update the clock and date on the page
+            document.getElementById('clock').innerHTML = timeString; // Display current time
+            document.getElementById('date').innerHTML = dateString; // Display current date
+        }
+
+        // Event listener to update the clock when the time zone is changed
+        document.getElementById('timezone-select').addEventListener('change', updateClock);
+
+        // Update the clock every second
+        setInterval(updateClock, 1000);
+
+        // Call updateClock once immediately on page load
+        updateClock();
+      src="https://cdn.jsdelivr.net/npm/moment-timezone@0.5.34/moment-timezone-with-data.js">
+      const updatetime = () => {
+        let d = new Date();
+        usa.innerHTML = d
+          .toLocaleString("en-US", {
+            timeZone: "America/Los_Angeles",
+          })
+          .split(", ")[1];
+          india.innerHTML = d
+          .toLocaleString("en-US", {
+            timeZone: "Asia/Kolkata",
+          })
+          .split(", ")[1];
+          china.innerHTML = d
+          .toLocaleString("en-US", {
+            timeZone: "Asia/Shanghai",
+          })
+          .split(", ")[1];
+          rassia.innerHTML = d
+          .toLocaleString("en-US", {
+            timeZone: "Asia/Yekaterinburg",
+          })
+          .split(", ")[1];
+          london.innerHTML = d
+          .toLocaleString("en-US", {
+            timeZone: "Europe/London",
+          })
+          .split(", ")[1];
+          japan.innerHTML = d
+          .toLocaleString("en-US", {
+            timeZone: "Asia/Tokyo",
+          })
+          .split(", ")[1];
+      };
+      setInterval(updatetime, 1000)
+      </script>
+
+
+</body>
+</html>
