@@ -1,193 +1,263 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WELCOME!</title>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css"
-        integrity="sha384-dpuaG1suU0eT09tx5plTaGMLBsfDLzUCCUXOY2j/LSvXYuG6Bqs43ALlhIqAJVRb" crossorigin="anonymous">
-
+    <title>Priority Message for Adnan</title>
     <style>
-        body {
-            background-color: #e1dee4;
+        :root {
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.9);
+            --accent: #38bdf8;
+            --text-dim: #94a3b8;
+            --text-bright: #f1f5f9;
+            --heart: #ef4444;
+            --success: #27c93f;
         }
 
-        .jumbotron {
-            background-color: black;
-            color: white;
-            padding: 30px;
-            border-radius: 10px;
+        body {
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            color: var(--text-bright);
+            font-family: 'Fira Code', 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Falling Hearts Background Effect */
+        .hearts-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            display: none;
+        }
+
+        .terminal {
+            width: 90%;
+            max-width: 500px;
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            display: none; 
+            flex-direction: column;
+            position: relative;
+            z-index: 10;
+        }
+
+        .envelope-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
             text-align: center;
         }
 
-        .clock {
-            font-size: 3rem;
-            font-weight: bold;
-            margin-top: 20px;
+        .pulse-heart {
+            font-size: 60px;
+            animation: heartbeat 1.5s infinite;
+            filter: drop-shadow(0 0 15px var(--heart));
+            margin-bottom: 20px;
         }
 
-        .date {
-            font-size: 1.25rem;
-            margin-top: 10px;
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.2); }
+            45% { transform: scale(1.3); }
         }
+
+        .top-bar {
+            padding: 15px;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            gap: 8px;
+            border-radius: 12px 12px 0 0;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ff5f56; } .yellow { background: #ffbd2e; } .green { background: #27c93f; }
+
+        .content {
+            padding: 35px;
+            min-height: 400px;
+            max-height: 500px;
+            overflow-y: auto;
+            line-height: 1.7;
+        }
+
+        .page { display: none; }
+        .page.active { display: block; animation: slideIn 0.4s ease-out; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .code-comment { color: var(--text-dim); font-size: 0.85em; margin-bottom: 20px; border-left: 2px solid var(--accent); padding-left: 10px; }
+        .keyword { color: var(--accent); font-weight: bold; }
+
+        /* Form Styling */
+        form { display: flex; flex-direction: column; gap: 15px; margin-top: 20px; }
+        label { font-size: 12px; color: var(--text-dim); }
+        input, textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid #475569;
+            border-radius: 6px;
+            color: white;
+            padding: 12px;
+            font-family: inherit;
+            box-sizing: border-box;
+        }
+        input:focus, textarea:focus { border-color: var(--accent); outline: none; }
+
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 0 0 12px 12px;
+        }
+
+        button, .submit-btn {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover:not(:disabled), .submit-btn:hover {
+            background: var(--accent);
+            color: var(--bg);
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        button:disabled { border-color: #475569; color: #475569; cursor: not-allowed; }
+        .page-num { color: var(--text-dim); font-size: 11px; align-self: center; }
+
     </style>
 </head>
-
 <body>
 
-    
-    <div class="clock">
+    <div class="hearts-bg" id="hearts"></div>
 
-        <div class="clock-face">
-  
-          <div class="hand hour-hand"></div>
-  
-          <div class="hand minute-hand"></div>
-  
-          <div class="hand second-hand"></div>
-  
+    <div class="envelope-container" id="opener" onclick="openLetter()">
+        <div class="pulse-heart">❤️</div>
+        <p style="letter-spacing: 3px; font-size: 12px; color: var(--accent);">DECRYPTING SECURE_NOTE.exe</p>
+    </div>
+
+    <div class="terminal" id="mainLetter">
+        <div class="top-bar">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
         </div>
-  
-      </div>
-  
-      <script src="script.js"></script>
-  </body>
-  </html>
 
-  
-    <!-- Navbar Section -->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Navbar</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
-                    </li>
-                </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
+        <div class="content" id="scrollContent">
+            <div class="page active" id="page1">
+                <div class="code-comment">// Entry_01.txt</div>
+                <p>To my <span class="keyword">most beloved person</span>,</p>
+                <p>You once said that only arranged marriages are successful. But do you know what true success in marriage really is according to Islam?</p>
+                <p>It is not about “love marriage” or “arranged marriage.” Those are just beginnings written by people. <span class="keyword">A truly successful marriage</span> is the one that leads a man and a woman to Jannah together.</p>
+                <p>It is when two people choose deen over ego. When they protect each other’s dignity and remind each other to pray.</p>
+            </div>
+
+            <div class="page" id="page2">
+                <div class="code-comment">// Entry_02.js</div>
+                <p>Like <span class="keyword">Khadijah (RA)</span> stood beside Prophet Muhammad ﷺ — not just as a wife, but as comfort and strength. When he came home worried, she reminded him of his goodness. She made him feel supported.</p>
+                <p>That is the <span class="keyword">Amanah</span> we walk through together. I will always be there—in your stress, your struggles, and your growth. I will not let problems break you. I will support you spiritually and with my duas every single day.</p>
+                <p>Let’s aim for a marriage that Allah is pleased with. A marriage built on sabr, shukr, loyalty, and deen.</p>
+            </div>
+
+            <div class="page" id="page3">
+                <div class="code-comment">// Entry_03.sys</div>
+                <p>My husband is always <span class="keyword">great, brilliant,</span> and has a beautiful smile on his handsomest face. My husband is <span class="keyword">No.1</span>. Both deen and dunya fikr wala.</p>
+                <p>My beloved husband <span class="keyword">Adnan Ahmad</span>... I don't want anything from you and nothing just you. <span class="keyword">Wallahi</span>, I love you more than you can imagine.</p>
+                <br>
+                <p style="text-align: right;">I am with you. Always.<br>— From <span class="keyword">Sumyya</span></p>
+            </div>
+
+            <div class="page" id="page4">
+                <div class="code-comment">// Reply_Module.sh</div>
+                <p><span class="keyword">> System:</span> Adnan, type your message to your wife Sumyya below.</p>
+                
+                <form action="https://formspree.io/f/xwvnrddb" method="POST">
+                    <label>Your Email Address:</label>
+                    <input type="email" name="email" placeholder="adnan@example.com" required>
+                    
+                    <label>Your Message to Sumyya:</label>
+                    <textarea name="message" rows="4" placeholder="Write your heart out..." required></textarea>
+                    
+                    <input type="hidden" name="_subject" value="A Letter from Adnan Ahmad!">
+                    
+                    <button type="submit" class="submit-btn">SEND TO SUMYYA</button>
                 </form>
             </div>
         </div>
-    </nav>
 
-    <script type="text/javascript">
-        let myDate = new Date();
-        let myDay = myDate.getDay();
-
-        // Array of days. 
-        let weekday = ['Sunday', 'Monday', 'Tuesday',
-            'Wednesday', 'Thursday', 'Friday', 'Saturday'
-        ];
-        document.write("Today is : " + weekday[myDay]);
-        document.write("<br/>");
-
-        // get hour value. 
-        let hours = myDate.getHours();
-        let ampm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        let minutes = myDate.getMinutes();
-        minutes = minutes < 10 ? '0' + minutes : minutes;
-        let myTime = hours + " " + ampm + " : " + minutes +
-            " : " + myDate.getMilliseconds();
-        document.write("\tCurrent time is : " + myTime); 
-    </script>
-
-    <!-- Jumbotron Section -->
-    <div class="jumbotron">
-        <h1 class="display-4">CLOCK</h1>
-        <p class="lead">"The clock is ticking—what are you doing with your time?"</p>
-        <div id="clock" class="clock"></div> <!-- Time will be updated here -->
-        <div id="date" class="date"></div> <!-- Date will be updated here -->
-        <p class="mt-3">"Time, a Gift from Allah – Use It Wisely."</p>
-
-        <!-- Time Zone Selector -->
-        <select id="timezone-select" class="form-select mt-3">
-            <option value="UTC">UTC</option>
-            <option value="Asia/Kolkata">India Standard Time (IST)</option> <!-- India Time -->
-            <option value="Asia/Karachi">Karachi (PKT)</option>
-            <option value="Asia/Riyadh">Riyadh (AST)</option>
-            <option value="Europe/London">London (GMT)</option>
-        </select>
+        <div class="nav-controls" id="controls">
+            <button id="prevBtn" onclick="changePage(-1)" disabled>Back</button>
+            <span class="page-num" id="pageLabel">PAGE: 1 / 4</span>
+            <button id="nextBtn" onclick="changePage(1)">Next</button>
+        </div>
     </div>
 
-    <!-- Optional JavaScript; choose one of the two! -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/moment-timezone@0.5.34/moment-timezone-with-data.js"></script>
-
     <script>
-        // Function to update the clock and date
-        function updateClock() {
-            const timezone = document.getElementById('timezone-select').value; // Get selected timezone
-            const now = moment().tz(timezone); // Get current time in selected timezone
-            const timeString = now.format('HH:mm:ss'); // Get time in HH:mm:ss format
-            const dateString = now.format('dddd, MMMM Do YYYY'); // Get date in full format
+        let current = 1;
+        const total = 4;
 
-            // Update the clock and date on the page
-            document.getElementById('clock').innerHTML = timeString; // Display current time
-            document.getElementById('date').innerHTML = dateString; // Display current date
+        function openLetter() {
+            document.getElementById('opener').style.display = 'none';
+            document.getElementById('mainLetter').style.display = 'flex';
         }
 
-        // Event listener to update the clock when the time zone is changed
-        document.getElementById('timezone-select').addEventListener('change', updateClock);
+        function changePage(step) {
+            document.getElementById(`page${current}`).classList.remove('active');
+            current += step;
+            document.getElementById(`page${current}`).classList.add('active');
+            document.getElementById('scrollContent').scrollTop = 0;
+            
+            // Show hearts on the last page
+            document.getElementById('hearts').style.display = (current === total) ? 'block' : 'none';
+            if(current === total) createHearts();
 
-        // Update the clock every second
-        setInterval(updateClock, 1000);
+            updateUI();
+        }
 
-        // Call updateClock once immediately on page load
-        updateClock();
-      src="https://cdn.jsdelivr.net/npm/moment-timezone@0.5.34/moment-timezone-with-data.js">
-      const updatetime = () => {
-        let d = new Date();
-        usa.innerHTML = d
-          .toLocaleString("en-US", {
-            timeZone: "America/Los_Angeles",
-          })
-          .split(", ")[1];
-          india.innerHTML = d
-          .toLocaleString("en-US", {
-            timeZone: "Asia/Kolkata",
-          })
-          .split(", ")[1];
-          china.innerHTML = d
-          .toLocaleString("en-US", {
-            timeZone: "Asia/Shanghai",
-          })
-          .split(", ")[1];
-          rassia.innerHTML = d
-          .toLocaleString("en-US", {
-            timeZone: "Asia/Yekaterinburg",
-          })
-          .split(", ")[1];
-          london.innerHTML = d
-          .toLocaleString("en-US", {
-            timeZone: "Europe/London",
-          })
-          .split(", ")[1];
-          japan.innerHTML = d
-          .toLocaleString("en-US", {
-            timeZone: "Asia/Tokyo",
-          })
-          .split(", ")[1];
-      };
-      setInterval(updatetime, 1000)
-      </script>
+        function updateUI() {
+            document.getElementById('pageLabel').innerText = `PAGE: ${current} / ${total}`;
+            document.getElementById('prevBtn').disabled = (current === 1);
+            document.getElementById('nextBtn').style.visibility = (current === total) ? 'hidden' : 'visible';
+        }
 
+        function createHearts() {
+            const container = document.getElementById('hearts');
+            for(let i=0; i<15; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤️';
+                heart.style.position = 'absolute';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = '-20px';
+                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                heart.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+                container.appendChild(heart);
+                setTimeout(() => heart.remove(), 5000);
+            }
+        }
 
+        // CSS animation for falling hearts
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes fall { to { transform: translateY(105vh); opacity: 0; } }`;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
